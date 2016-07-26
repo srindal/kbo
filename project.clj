@@ -12,15 +12,22 @@
                  [ring "1.5.0"]
                  [ring/ring-defaults "0.2.1"]
                  [compojure "1.5.1"]
+                 [liberator "0.14.1"]
                  [hiccup "1.0.5"]
                  [yogthos/config "0.8"]
                  [org.clojure/clojurescript "1.9.93"
                   :scope "provided"]
+                 [cljs-ajax "0.5.8"]
+                 [funcool/promesa "1.1.1"]
+                 [funcool/cats "1.2.1"]
+                 [org.clojure/core.async "0.2.374"]
                  [secretary "1.2.3"]
+
                  [venantius/accountant "0.1.7"
                   :exclusions [org.clojure/tools.reader]]]
 
   :plugins [[lein-environ "1.0.2"]
+            [lein-ring "0.8.11"]
             [lein-cljsbuild "1.1.1"]
             [lein-asset-minifier "0.2.7"
              :exclusions [org.clojure/clojure]]]
