@@ -8,3 +8,10 @@
 (defn hent-medlemmer []
   (-> (h/get-basic "/medlemmer")
       (p/then prn)))
+
+(defn frontpage [_]
+  {:medlemmer (hent-medlemmer)})
+
+
+(defn about [_]
+  {:hest (p/promise [])})

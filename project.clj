@@ -18,6 +18,7 @@
                  [org.clojure/clojurescript "1.9.93"
                   :scope "provided"]
                  [cljs-ajax "0.5.8"]
+                 [bidi "2.0.9"]
                  [funcool/promesa "1.1.1"]
                  [funcool/cats "1.2.1"]
                  [org.clojure/core.async "0.2.374"]

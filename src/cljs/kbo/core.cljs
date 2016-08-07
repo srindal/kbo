@@ -3,44 +3,49 @@
               [reagent.session :as session]
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]
-              [kbo.page-dispatcher :as pd]))
+              [kbo.page-dispatcher :as pd]
+              [kbo.pages.frontpage :as frontpage]
+              [kbo.pages.about :as aboutpage]
+              [kbo.state :as state]
+              [kbo.utils.util :as util]
+              [kbo.navigation :as navigation]
+              [kbo.views.application :as application]
+              [bidi.bidi :as bidi]
+              [reagent.core :as r]))
 
-;; -------------------------
-;; Views
+(defn on-js-reload []
+  ;; optionally touch your app-state to force rerendering depending on
+  ;; your application
+  (swap! state/state update-in [:__figwheel_counter] inc))
 
-(defn home-page []
-  [:div [:h2 "Welcome to kbo"]
-   [:div [:a {:href "/about"} "go to about page"]]])
+(def nav
+  {:navigation/frontpage               [frontpage/render pd/frontpage]
+   :navigation/ejendom                 [aboutpage/render pd/about]})
 
-(defn about-page []
-  [:div [:h2 "About kbo"]
-   [:div [:a {:href "/"} "go to the home page"]]])
-
-(defn current-page []
-  [:div [(session/get :current-page)]])
-
-;; -------------------------
-;; Routes
-
-(secretary/defroute "/" []
-  (session/put! :current-page #'home-page))
-
-(secretary/defroute "/about" []
-  (session/put! :current-page #'about-page))
 
 ;; -------------------------
 ;; Initialize app
 
+(defn app-view []
+  (let [path (navigation/path-for-route (:navigation @state/state))
+        ui-state-atom (or (get @state/state path)
+                          (r/atom {}))]
+    [application/view {:on-login :undefined ;(partial dispatcher/login (util/map-vals second nav))
+                       :pages    (util/map-vals first nav)}
+     @state/state ui-state-atom]))
+
 (defn mount-root []
-  (reagent/render [current-page] (.getElementById js/document "app")))
+  (r/render-component [app-view] (js/document.getElementById "app"))
+  (navigation/init! (util/map-vals second nav)))
 
 (defn init! []
-  (accountant/configure-navigation!
-    {:nav-handler
-     (fn [path]
-       (secretary/dispatch! path))
-     :path-exists?
-     (fn [path]
-       (secretary/locate-route path))})
-  (accountant/dispatch-current!)
-  (mount-root))
+
+  (enable-console-print!)
+
+;  (state/assoc-in! [:progress :configuration-promise] (dispatcher/boot))
+
+ ; (state/assoc-in! [:progress :identity-promise] (dispatcher/login-from-local-token))
+
+  (mount-root)
+                                        ;(dispatcher/refresh-services-status)
+  )
